@@ -13,7 +13,7 @@ public interface UserRepository extends CrudRepository<AppUser, Integer> {
     Optional<AppUser> findOneByUsername(String username);
 
     @Override
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
     List<AppUser> findAll();
 
     @Override

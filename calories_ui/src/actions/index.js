@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { browserHistory } from 'react-router';
+import { push } from 'react-router-redux';
 import {
   AUTH_USER,
   UNAUTH_USER,
   AUTH_ERROR,
-  FETCH_MESSAGE
+  FETCH_USERS
 } from './types';
 
 const ROOT_URL = 'http://localhost:8090';
@@ -20,7 +20,7 @@ export function signinUser({ email, password }) {
         // - Save the JWT token
         localStorage.setItem('token', response.data.token);
         // - redirect to the route '/feature'
-        browserHistory.push('/feature');
+        dispatch(push('/feature'));
       })
       .catch(() => {
         // If request is bad...
@@ -36,7 +36,7 @@ export function signupUser({ email, password }) {
       .then(response => {
         dispatch({ type: AUTH_USER });
         localStorage.setItem('token', response.data.token);
-        browserHistory.push('/feature');
+        dispatch(push('/feature'));
       })
       .catch(response => dispatch(authError(response.data.error)));
   }
@@ -55,16 +55,22 @@ export function signoutUser() {
   return { type: UNAUTH_USER };
 }
 
-export function fetchMessage() {
+export function fetchUsers() {
   return function(dispatch) {
-    axios.get(ROOT_URL, {
+    axios.get(`${ROOT_URL}/api/appUsers`, {
       headers: { authorization: localStorage.getItem('token') }
     })
-      .then(response => {
-        dispatch({
-          type: FETCH_MESSAGE,
-          payload: response.data.message
-        });
-      });
+        .then(userCollection => {
+            return userCollection;
+        }, error => {
+            if (error.status.code === 403) {
+                dispatch({type: "ERROR_RESPONSE", payload: error})
+                throw error;
+            }
+        }).then(userCollection => {
+        dispatch({type: FETCH_USERS, payload: userCollection.data._embedded.appUsers});
+    }).catch((err) => {
+        dispatch({type: "ERROR_RESPONSE", payload: err})
+    })
   }
 }

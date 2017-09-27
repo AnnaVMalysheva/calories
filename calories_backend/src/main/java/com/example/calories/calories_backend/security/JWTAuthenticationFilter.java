@@ -5,6 +5,8 @@ import com.example.calories.calories_backend.entities.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -59,6 +61,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
+        ObjectMapper mapper = new ObjectMapper();
+        res.setStatus(HttpStatus.OK.value());
+        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        mapper.writeValue(res.getWriter(), new JWTAuthenticationResponse(token));
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
     }
 }
