@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import {fetchUsers} from '../actions';
+
+const { object } = PropTypes;
 
 class Feature extends Component {
   componentWillMount() {
@@ -45,5 +48,9 @@ class Feature extends Component {
 function mapStateToProps(state) {
   return { users: state.users };
 }
+
+Feature.propTypes = {
+    users: object.isRequired
+};
 
 export default connect(mapStateToProps, {fetchUsers})(Feature);

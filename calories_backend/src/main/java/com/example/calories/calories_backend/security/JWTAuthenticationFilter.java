@@ -11,7 +11,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -19,8 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 import static com.example.calories.calories_backend.security.SecurityConstants.*;
 
@@ -57,14 +58,22 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication auth) throws IOException, ServletException {
 
         String token = Jwts.builder()
-                .setSubject(((User) auth.getPrincipal()).getUsername())
+                .setSubject(((JWTUser) auth.getPrincipal()).getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
         ObjectMapper mapper = new ObjectMapper();
+        Map<String,Object> result = new HashMap<>();
+        List<String> authorizations = new ArrayList<>();
+
+        for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
+            authorizations.add(grantedAuthority.getAuthority());
+        }
+        result.put("permissions", authorizations);
+        result.put("userName", ((JWTUser) auth.getPrincipal()).getUsername());
+        result.put("token", token);
         res.setStatus(HttpStatus.OK.value());
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        mapper.writeValue(res.getWriter(), new JWTAuthenticationResponse(token));
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        mapper.writeValue(res.getWriter(), result);
     }
 }

@@ -1,15 +1,14 @@
-package com.example.calories.calories_backend.entities;
+package com.example.calories.calories_backend.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Date;
 
-public class JwtUser implements UserDetails {
+
+public class JWTUser implements UserDetails {
 
     private final Integer id;
     private String username;
@@ -21,7 +20,7 @@ public class JwtUser implements UserDetails {
     private boolean enabled;
     private Date lastPasswordResetDate;
 
-    public JwtUser(
+    public JWTUser(
             Integer id,
             String username,
             String firstname,
@@ -42,7 +41,7 @@ public class JwtUser implements UserDetails {
         this.lastPasswordResetDate = lastPasswordResetDate;
     }
 
-    public JwtUser(
+    public JWTUser(
             Integer id,
             String email,
             String password, Collection<? extends GrantedAuthority> authorities

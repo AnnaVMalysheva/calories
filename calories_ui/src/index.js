@@ -15,7 +15,7 @@ import Header from './components/header';
 import RequireAuth from './components/auth/require_auth';
 import Welcome from './components/welcome';
 import reducers from './reducers';
-import { AUTH_USER } from './actions/types';
+import {isAuthenticated} from './actions'
 
 const history = createHistory();
 const router = routerMiddleware(history);
@@ -25,7 +25,7 @@ const token = localStorage.getItem('token');
 // If we have a token, consider the user to be signed in
 if (token) {
   // we need to update application state
-  store.dispatch({ type: AUTH_USER });
+  store.dispatch(isAuthenticated());
 }
 
 ReactDOM.render(

@@ -4,6 +4,8 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -19,8 +21,11 @@ import static com.example.calories.calories_backend.security.SecurityConstants.T
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public JWTAuthorizationFilter(AuthenticationManager authManager) {
+    private UserDetailsService userDetailsService;
+
+    public JWTAuthorizationFilter(AuthenticationManager authManager, UserDetailsService userDetailsService) {
         super(authManager);
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -52,8 +57,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .getBody()
                     .getSubject();
 
-            if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+            if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(user);
+                return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             }
             return null;
         }

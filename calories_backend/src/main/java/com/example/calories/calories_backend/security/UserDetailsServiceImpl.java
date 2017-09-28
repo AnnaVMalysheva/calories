@@ -28,6 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (!applicationUser.isPresent()) {
             throw new UsernameNotFoundException(username);
         }
-        return new User(applicationUser.get().getUsername(), applicationUser.get().getPasswordHash(), emptyList());
+        return JWTUserFactory.create(applicationUser.get());
     }
 }
