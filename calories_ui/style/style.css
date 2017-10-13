@@ -5,3 +5,11 @@
 table.report-table {
   margin: 10px 0;
 }
+
+.field__sortable {
+  cursor: pointer;
+}
+
+.sorter-icon {
+  margin-left: 5px;
+}

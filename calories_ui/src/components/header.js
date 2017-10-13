@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 class Header extends Component {
+
+
   renderLinks() {
     if (this.props.authenticated) {
       // show a link to sign out

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import {push} from 'react-router-redux';
 
 export default function(ComposedComponent) {
   class Authentication extends Component {
@@ -7,15 +8,15 @@ export default function(ComposedComponent) {
       router: React.PropTypes.object
     }
 
-    componentWillMount() {
+    componentDidMount() {
       if (!this.props.authenticated) {
-        this.context.router.push('/');
+        this.props.dispatch(push('/'));
       }
     }
 
     componentWillUpdate(nextProps) {
       if (!nextProps.authenticated) {
-        this.context.router.push('/');
+          this.props.dispatch(push('/'));
       }
     }
 

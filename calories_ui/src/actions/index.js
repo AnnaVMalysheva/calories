@@ -1,12 +1,15 @@
 import axios from 'axios';
+import decode from 'jwt-decode';
 import {push} from 'react-router-redux';
 import {
     AUTH_USER,
     UNAUTH_USER,
-    AUTH_ERROR,
+    CREATE_ERROR,
     FETCH_USERS,
     IS_AUTHENTICATED,
-    IS_NOT_AUTHENTICATED
+    IS_NOT_AUTHENTICATED,
+    CLEAR_ERROR,
+    AUTH_USER_DATA
 } from './types';
 
 const ROOT_URL = 'http://localhost:8090';
@@ -24,10 +27,10 @@ export function signinUser({email, password}) {
                 // - redirect to the route '/feature'
                 dispatch(push('/feature'));
             })
-            .catch(() => {
+            .catch(err => {
                 // If request is bad...
                 // - Show an error to the user
-                dispatch(authError('Bad Login Info'));
+                dispatch(error(err.message));
             });
     }
 }
@@ -40,13 +43,13 @@ export function signupUser({email, password, role}) {
                 localStorage.setItem('token', response.data.token);
                 dispatch(push('/feature'));
             })
-            .catch(response => dispatch(authError(response.data.error)));
+            .catch(err => dispatch(error(err.message)));
     }
 }
 
-export function authError(error) {
+export function error(error) {
     return {
-        type: AUTH_ERROR,
+        type: CREATE_ERROR,
         payload: error
     };
 }
@@ -57,37 +60,68 @@ export function signoutUser() {
     return {type: UNAUTH_USER};
 }
 
-export function fetchUsers() {
+export function fetchUsers(page, limit, sort, order) {
     return function (dispatch) {
-        axios.get(`${ROOT_URL}/api/appUsers`, {
+        axios.get(`${ROOT_URL}/api/appUsers?page=${page - 1}&size=${limit}&sort=${sort},${order}`, {
             headers: {authorization: localStorage.getItem('token')}
         })
             .then(userCollection => {
-                return userCollection;
+                dispatch({type: FETCH_USERS,
+                    payload: {
+                        data: userCollection.data._embedded.appUsers,
+                        page,
+                        limit,
+                        count: userCollection.data.page.totalElements,
+                        sort,
+                        order
+                    }});
+                dispatch(push(`/feature/?page=${page}&limit=${limit}&sort=${sort}&order=${order}`));
             }, error => {
                 if (error.status.code === 403) {
-                    dispatch({type: "ERROR_RESPONSE", payload: error})
                     throw error;
                 }
-            }).then(userCollection => {
-            dispatch({type: FETCH_USERS, payload: userCollection.data._embedded.appUsers});
-        }).catch((err) => {
-            dispatch({type: "ERROR_RESPONSE", payload: err})
+            }).catch((err) => {
+            dispatch(error(err.message));
         })
     }
 }
 
-    export function isAuthenticated() {
+    export function isAuthenticated(token) {
+        const decodedToken = decode(token);
+        const date = new Date(0);
+        date.setUTCSeconds(decodedToken.exp);
         return function (dispatch) {
-            axios.get(`${ROOT_URL}/users/user`, {
-                headers: {authorization: localStorage.getItem('token')}
-            })
-                .then((response) => {
-                    dispatch({type: IS_AUTHENTICATED, payload: response.data})
+            if (date < new Date()) {
+                dispatch({type: IS_NOT_AUTHENTICATED, payload: ''});
+            } else {
+                dispatch({type: IS_AUTHENTICATED});
+                axios.get(`${ROOT_URL}/users/user`, {
+                    headers: {authorization: localStorage.getItem('token')}
+                     })
+                    .then((response) => {
+                    dispatch({type: AUTH_USER_DATA, payload: response.data})
                 })
-                .catch((err) => {
-                    dispatch({type: IS_NOT_AUTHENTICATED, payload: ''})
-                })
+            }
+
+            // axios.get(`${ROOT_URL}/users/user`, {
+            //     headers: {authorization: localStorage.getItem('token')}
+            // })
+            //     .then((response) => {
+            //         dispatch({type: IS_AUTHENTICATED, payload: response.data})
+            //     })
+            //     .catch((err) => {
+            //         dispatch(error(err.message));
+            //         dispatch({type: IS_NOT_AUTHENTICATED, payload: ''});
+            //     })
         }
+    }
+
+    export const clearErrors = () => dispatch =>
+        dispatch({
+            type: CLEAR_ERROR
+        });
+
+    export function removeUser(id, shouldRemoveFromState, callback){
+        console.log(id);
     }
 

@@ -1,0 +1,37 @@
+.error {
+  color: red;
+}
+
+table.report-table {
+  margin: 10px 0;
+}
+
+.field__sortable {
+  cursor: pointer;
+}
+
+.sorter-icon {
+  margin-left: 5px;
+}
+
+.user-table__item {
+&--action{
+   text-align: center;
+ }
+}
+
+.copy-link {
+&,
+&:hover,
+&:visited {
+   color: #166240;
+ }
+}
+
+.delete-link {
+&,
+&:hover,
+&:visited {
+   color: #a22d30;
+ }
+}

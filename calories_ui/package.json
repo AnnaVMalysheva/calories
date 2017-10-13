@@ -27,8 +27,12 @@
   "dependencies": {
     "axios": "^0.9.1",
     "babel-preset-stage-1": "^6.1.18",
+    "classnames": "^2.2.5",
+    "css-loader": "^0.28.7",
     "history": "^4.7.2",
+    "jwt-decode": "^2.2.0",
     "lodash": "^4.17.4",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.1",
     "react-dom": "^15.6.1",
@@ -38,8 +42,9 @@
     "react-router-dom": "^4.1.1",
     "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.0.4",
-    "redux-form": "^5.0.1",
+    "redux-form": "^7.0.4",
     "redux-thunk": "^2.0.1",
+    "style-loader": "^0.18.2",
     "when": "^3.7.8"
   }
 }

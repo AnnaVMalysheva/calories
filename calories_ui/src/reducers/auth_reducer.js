@@ -3,7 +3,8 @@ import {
   UNAUTH_USER,
   AUTH_ERROR,
   IS_AUTHENTICATED,
-  IS_NOT_AUTHENTICATED
+  IS_NOT_AUTHENTICATED,
+  AUTH_USER_DATA
 } from '../actions/types';
 
 const initialState = {
@@ -23,7 +24,9 @@ export default function(state = initialState, action) {
     case AUTH_ERROR:
       return { ...state, error: action.payload };
     case IS_AUTHENTICATED:
-      return { ...state, authenticated: true, userData: action.payload };
+      return { ...state, authenticated: true};
+      case AUTH_USER_DATA:
+          return { ...state, userData:action.payload, isAdmin: action.payload.permissions.includes("ROLE_ADMIN")};
     case IS_NOT_AUTHENTICATED:
       return { ...state, authenticated: false, userData: null };
   }
