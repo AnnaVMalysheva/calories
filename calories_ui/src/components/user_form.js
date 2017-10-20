@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import * as actions from '../actions';
+import {signupUser} from '../actions';
 
 
 const renderField = ({ input, label, type, meta: { touched, error, warning }}) => (
@@ -15,33 +15,44 @@ const renderField = ({ input, label, type, meta: { touched, error, warning }}) =
 )
 
 
-const validate = formProps => {
+const validate = (formProps) => {
     const errors = {};
+
+    if (formProps) {
 
     if (!formProps.email) {
         errors.email = 'Please enter an email';
     }
 
-    if (!formProps.password) {
-        errors.password = 'Please enter a password';
-    }
+    if(!formProps.id) {
 
-    if (!formProps.passwordConfirm) {
-        errors.passwordConfirm = 'Please enter a password confirmation';
-    }
+        if (!formProps.password) {
+            errors.password = 'Please enter a password';
+        }
 
-    if (formProps.password !== formProps.passwordConfirm) {
-        errors.password = 'Passwords must match';
-    }
+        if (!formProps.passwordConfirm) {
+            errors.passwordConfirm = 'Please enter a password confirmation';
+        }
 
+    }
+        if (formProps.password !== formProps.passwordConfirm) {
+            errors.password = 'Passwords must match';
+        }
+    }
     return errors;
 }
+
+const required = (value, allValues, props) => (value ? undefined : 'Required')
 
 class UserForm extends Component {
 
   constructor(props) {
         super(props);
   }
+
+   componentDidMount() {
+      this.state={mode : this.props.mode}
+   }
 
   handleFormSubmit(formProps) {
     // Call action creator to sign up the user!
@@ -64,13 +75,13 @@ class UserForm extends Component {
     return (
       <form onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
         <fieldset className="form-group">
-          <Field name="email" component={renderField} label="User email" type="text"/>
+          <Field name="username" component={renderField} label="User email" type="text"/>
         </fieldset>
         <fieldset className="form-group">
-          <Field name="password" component={renderField} label="User password" type="password" autoComplete="new-password"/>
+          <Field name="password" component={renderField} label="User password" type="password" autoComplete="new-password" validate={[required]}/>
         </fieldset>
         <fieldset className="form-group">
-          <Field name="passwordConfirm" component={renderField} label="User password" type="password" autoComplete="new-password"/>
+          <Field name="passwordConfirm" component={renderField} label="User password confirmation" type="password" autoComplete="new-password"/>
         </fieldset>
         <fieldset className="form-group">
           <label>Role:</label>
@@ -84,7 +95,7 @@ class UserForm extends Component {
           </div>
         </fieldset>
         <fieldset className="form-group">
-          <Field name="dailyExpect" component={renderField} label="Daily Expectation" type="text"/>
+          <Field name="dailyExpectation" component={renderField} label="Daily Expectation" type="text"/>
         </fieldset>
         {this.renderAlert()}
         <button action="submit" className="btn btn-primary">Sign up!</button>
@@ -93,12 +104,24 @@ class UserForm extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return { errorMessage: state.auth.error };
+
+// export default reduxForm({
+//   form: 'signup',
+//   validate
+// }, null, {signupUser})(UserForm);
+
+
+const CreateUserForm = props => {
+
+   return <UserForm {...props} mode={'create'}/>;
 }
+const EditUserForm = props =>
+    <UserForm {...props} mode={'edit'} />;
 
-export default reduxForm({
-  form: 'signup',
-  validate
-}, mapStateToProps, actions)(UserForm);
 
+export const ConnectedCreateUserForm = reduxForm( {form: 'createUser',
+    validate
+}, null, {signupUser})(CreateUserForm);
+export const ConnectedEditUserForm = reduxForm({form: 'editUser',
+    validate
+}, null, {signupUser})(EditUserForm);

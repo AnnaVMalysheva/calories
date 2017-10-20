@@ -38,7 +38,7 @@ ReactDOM.render(
       <Route exact path="/" component={Welcome}/>
       <Route path="/signin" component={Signin} />
       <Route exact path="/signout" component={Signout} />
-      <Route path="/new/:id" component={UserFormPage} />
+      <Route path="/new/:id?" component={RequireAuth(UserFormPage)} />
       <Route path="/feature" component={RequireAuth(UserPage)} />
       </div>
     </ConnectedRouter>

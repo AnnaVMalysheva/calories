@@ -33,8 +33,10 @@ public class AppUser {
     Long version;
 
     @Transient
+    @JsonIgnore
     private String password;
 
+    @JsonIgnore
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
@@ -51,7 +53,6 @@ public class AppUser {
         this.password = password;
         this.passwordHash = PASSWORD_ENCODER.encode(password);
     }
-
 
     @Builder
     public AppUser(String username, String password, Role role, Integer dailyExpectation) {

@@ -28,7 +28,7 @@ export default function (props) {
             <td>{role}</td>
             <td>{dailyExpectation}</td>
             <td>
-                <Link to={{ pathname: '/new', search: `id=${id}` }}
+                <Link to={{ pathname: `/new/${id}` }}
                 >copy
                 </Link>
             </td>

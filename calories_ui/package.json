@@ -42,7 +42,7 @@
     "react-router-dom": "^4.1.1",
     "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.0.4",
-    "redux-form": "^7.0.4",
+    "redux-form": "^7.1.1",
     "redux-thunk": "^2.0.1",
     "style-loader": "^0.18.2",
     "when": "^3.7.8"

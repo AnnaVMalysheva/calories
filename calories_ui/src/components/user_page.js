@@ -20,7 +20,7 @@ class UserPage extends Component {
         return (
             <div>
                 {errorMessage ? <Alert bsStyle="danger">{errorMessage}</Alert> : null}
-                <LinkContainer to="/signup">
+                <LinkContainer to="/new">
                     <Button>Create</Button>
                 </LinkContainer>
                 <UserTable {...this.props} />
